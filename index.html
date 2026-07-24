@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Scorchmark — custom laser engraving & cutting. Coasters, tumblers, cutting boards, signs, business cards, and more, made to order. From blank to bold.">
+<meta property="og:title" content="Scorchmark — Custom Laser Engraving">
+<meta property="og:description" content="Coasters, tumblers, boards, signs, business cards — engraved sharp and made to order. From blank to bold.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://scorchmark.co">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔥</text></svg>'>
+<title>SCORCHMARK — Custom Laser Engraving</title>
+<style>
+  :root {
+    /* Ground: warm charcoal — embers seen in the dark, not blue-black */
+    --ink-900: #0d0b09;
+    --ink-800: #14110d;
+    --ink-700: #1b1712;
+    --surface: #201b15;
+    --surface-2: #2a231b;
+    --line: #382f25;
+    --line-bright: #4c4030;
+
+    /* Warm off-white text with a toasted bias */
+    --text: #f6efe6;
+    --text-dim: #c4b5a5;
+    --text-faint: #8b7d6e;
+
+    /* Flame accents: laser-shield orange lead, flame red + hot yellow, ember */
+    --shield: #ff6a1a;
+    --shield-deep: #e2480a;
+    --magenta: #ff3b30;
+    --violet: #ffc531;
+    --ember: #ff9a4d;
+
+    --glow-shield: 0 0 26px rgba(255,106,26,.5);
+    --glow-red: 0 0 26px rgba(255,59,48,.42);
+
+    --mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+    --sans: "Helvetica Neue", "Segoe UI", Arial, system-ui, sans-serif;
+
+    --maxw: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(58vw 52vw at 6% -10%, rgba(255,150,40,.18), transparent 60%),
+      radial-gradient(48vw 48vw at 100% 2%, rgba(255,59,48,.13), transparent 60%),
+      radial-gradient(82vw 60vw at 55% 114%, rgba(255,197,49,.08), transparent 62%),
+      var(--ink-900);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  a { color: inherit; text-decoration: none; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--shield);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 26px; height: 1px;
+    background: linear-gradient(90deg, var(--shield), transparent);
+  }
+
+  h2.section-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.05;
+    margin: 14px 0 8px;
+    text-wrap: balance;
+  }
+  .section-sub { color: var(--text-dim); max-width: 60ch; margin: 0; }
+
+  section { padding: 84px 0; }
+
+  /* ---------- NAV ---------- */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(7,8,12,.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    font-weight: 800; font-size: 20px; letter-spacing: .14em;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .brand .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--shield); box-shadow: var(--glow-shield);
+    animation: pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+  .brand-mark { height: 26px; width: auto; display: inline-block; animation: flicker 3s ease-in-out infinite; }
+  @keyframes flicker { 0%,100%{filter:drop-shadow(0 0 6px rgba(255,106,26,.45))} 50%{filter:drop-shadow(0 0 11px rgba(255,106,26,.75))} }
+  .about-flame { width: 96px; height: auto; filter: drop-shadow(0 10px 34px rgba(255,106,26,.42)); }
+  .brand b { color: var(--text); }
+  .brand span { color: var(--shield); }
+
+  nav.links { display: flex; gap: 30px; align-items: center; }
+  nav.links a {
+    font-size: 14px; color: var(--text-dim);
+    font-family: var(--mono); letter-spacing: .02em;
+    transition: color .18s;
+  }
+  nav.links a:hover { color: var(--text); }
+
+  .btn {
+    font-family: var(--mono); font-size: 13px; letter-spacing: .04em;
+    padding: 11px 18px; border-radius: 10px; cursor: pointer;
+    border: 1px solid transparent; transition: all .2s; white-space: nowrap;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--shield), var(--shield-deep));
+    color: #2a0f02; font-weight: 700;
+    box-shadow: 0 0 0 1px rgba(255,106,26,.4), 0 8px 30px rgba(255,106,26,.18);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255,106,26,.7), 0 10px 34px rgba(255,106,26,.3); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    border-color: var(--line-bright);
+  }
+  .btn-ghost:hover { border-color: var(--shield); color: var(--shield); }
+  .nav .btn { padding: 9px 15px; }
+
+  .nav-toggle { display: none; }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 92px 0 72px; position: relative; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6.4vw, 76px);
+    font-weight: 800; letter-spacing: -.03em; line-height: .98;
+    margin: 18px 0 20px; text-wrap: balance;
+    position: relative;
+  }
+  .hero h1 .lit {
+    background: linear-gradient(105deg, var(--violet), var(--shield) 48%, var(--magenta));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  /* laser scan line sweeping the headline once on load */
+  .scanwrap { position: relative; display: inline-block; }
+  .scanwrap::after {
+    content: ""; position: absolute; left: -4%; right: -4%; height: 2px;
+    top: 0; background: linear-gradient(90deg, transparent, var(--shield), transparent);
+    box-shadow: 0 0 16px 3px rgba(255,106,26,.7);
+    animation: scan 2.4s ease-in-out .3s 1 both;
+    opacity: 0;
+  }
+  @keyframes scan {
+    0% { top: 0; opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  .hero p.lead { font-size: 18px; color: var(--text-dim); max-width: 46ch; margin: 0 0 30px; }
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 30px; margin-top: 38px; padding-top: 26px;
+    border-top: 1px solid var(--line);
+  }
+  .hero-stats div span { display: block; }
+  .stat-n { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--text); }
+  .stat-l { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .12em; font-family: var(--mono); }
+
+  /* Hero visual: a "sample" engrave card */
+  .hero-card {
+    background: linear-gradient(160deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--line-bright);
+    border-radius: 18px; padding: 22px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .hc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .hc-head .tag { font-family: var(--mono); font-size: 11px; color: var(--shield); letter-spacing: .1em; text-transform: uppercase; }
+  .hc-dots { display: flex; gap: 6px; }
+  .hc-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-bright); display: block; }
+  .puck {
+    aspect-ratio: 1/1; border-radius: 16px; display: grid; place-items: center;
+    background:
+      radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,.08), transparent 50%),
+      linear-gradient(150deg, #2b2f38, #16181f);
+    border: 1px solid rgba(255,255,255,.06);
+    position: relative; overflow: hidden;
+  }
+  .puck::after {
+    content:""; position:absolute; inset:0;
+    background: repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0 2px, transparent 2px 5px);
+  }
+  .puck .etch {
+    text-align: center; z-index: 2; padding: 0 10px;
+  }
+  .puck .etch .mark {
+    font-size: 40px; font-weight: 800; letter-spacing: .04em;
+    color: #e6ded2;
+    text-shadow: 0 1px 1px rgba(0,0,0,.6), 0 0 14px rgba(255,154,77,.25);
+  }
+  .puck .etch small { display:block; font-family: var(--mono); font-size: 11px; color: #b7bdc9; letter-spacing:.22em; text-transform: uppercase; margin-top: 6px; }
+
+  /* ---------- TABS: occasion / product ---------- */
+  .tabs { display: inline-flex; gap: 6px; background: var(--surface); padding: 5px; border-radius: 12px; border: 1px solid var(--line); margin: 22px 0 34px; }
+  .tab {
+    font-family: var(--mono); font-size: 13px; letter-spacing: .03em;
+    padding: 9px 18px; border-radius: 8px; cursor: pointer; color: var(--text-dim);
+    border: none; background: transparent; transition: all .18s;
+  }
+  .tab[aria-selected="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line-bright); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+  .grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+
+  .tile {
+    position: relative; border-radius: 14px; padding: 22px; min-height: 168px;
+    border: 1px solid var(--line); overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    background: var(--surface);
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    cursor: pointer;
+  }
+  .tile:hover { transform: translateY(-3px); border-color: var(--shield); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+  .tile .ico { position: absolute; top: 18px; left: 18px; opacity: .85; }
+  .tile h3 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .tile p { margin: 4px 0 0; font-size: 13px; color: var(--text-dim); }
+  .tile .arrow { position: absolute; top: 18px; right: 18px; color: var(--text-faint); transition: color .2s, transform .2s; }
+  .tile:hover .arrow { color: var(--shield); transform: translate(2px,-2px); }
+  /* material-tinted washes */
+  .tile.t-wed  { background: linear-gradient(160deg, rgba(255,197,49,.16), var(--surface)); }
+  .tile.t-hol  { background: linear-gradient(160deg, rgba(255,154,77,.14), var(--surface)); }
+  .tile.t-pet  { background: linear-gradient(160deg, rgba(255,106,26,.12), var(--surface)); }
+  .tile.t-corp { background: linear-gradient(160deg, rgba(226,72,10,.16), var(--surface)); }
+  .tile.t-house{ background: linear-gradient(160deg, rgba(255,59,48,.12), var(--surface)); }
+  .tile.t-just { background: linear-gradient(160deg, rgba(255,255,255,.05), var(--surface)); }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade .3s ease; }
+  @keyframes fade { from{opacity:0; transform: translateY(6px)} to{opacity:1; transform:none} }
+
+  /* ---------- WHAT'S POSSIBLE (materials) ---------- */
+  .mats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .mat {
+    border-radius: 14px; overflow: hidden; border: 1px solid var(--line);
+    position: relative; aspect-ratio: 4/3; display: flex; align-items: flex-end;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .mat:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,.45); }
+  .mat .swatch { position: absolute; inset: 0; }
+  .mat .label {
+    position: relative; z-index: 2; width: 100%;
+    padding: 16px 18px; background: linear-gradient(0deg, rgba(4,5,8,.86), transparent);
+  }
+  .mat .label b { display: block; font-size: 16px; }
+  .mat .label span { font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: .06em; }
+  .sw-wood   { background: radial-gradient(120% 100% at 20% 0, #7a5230, #3a2615); }
+  .sw-slate  { background: radial-gradient(120% 100% at 20% 0, #3a3e46, #171a20); }
+  .sw-acrylic{ background: radial-gradient(120% 100% at 20% 0, #1f3a44, #0b1418); }
+  .sw-metal  { background: radial-gradient(120% 100% at 20% 0, #5a5f68, #23262c); }
+  .sw-leather{ background: radial-gradient(120% 100% at 20% 0, #7d4f2a, #3f2814); }
+  .sw-glass  { background: radial-gradient(120% 100% at 20% 0, #2a3f47, #101a1e); }
+  .mat .swatch::after {
+    content:""; position:absolute; inset:0;
+    background: repeating-linear-gradient(125deg, rgba(255,255,255,.035) 0 3px, transparent 3px 8px);
+  }
+
+  /* ---------- QUOTE / CUSTOM ORDER ---------- */
+  .order { background: linear-gradient(180deg, transparent, rgba(255,59,48,.04)); }
+  .order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .form-card {
+    background: var(--surface); border: 1px solid var(--line-bright);
+    border-radius: 18px; padding: 28px;
+  }
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 12px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--ink-800); border: 1px solid var(--line-bright);
+    color: var(--text); border-radius: 10px; padding: 12px 14px; font: inherit; font-size: 15px;
+    transition: border-color .18s, box-shadow .18s;
+  }
+  .field textarea { resize: vertical; min-height: 84px; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--shield); box-shadow: 0 0 0 3px rgba(255,106,26,.14);
+  }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .upload {
+    border: 1px dashed var(--line-bright); border-radius: 10px; padding: 18px;
+    text-align: center; color: var(--text-faint); font-family: var(--mono); font-size: 13px;
+    cursor: pointer; transition: border-color .2s, color .2s;
+  }
+  .upload:hover { border-color: var(--shield); color: var(--shield); }
+  .form-card .btn-primary { width: 100%; padding: 14px; font-size: 14px; margin-top: 6px; }
+  .note { font-size: 12px; color: var(--text-faint); text-align: center; margin: 12px 0 0; font-family: var(--mono); }
+
+  /* live preview */
+  .preview-card {
+    position: sticky; top: 88px;
+    background: linear-gradient(160deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--line-bright); border-radius: 18px; padding: 26px;
+  }
+  .preview-card .plabel { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--shield); }
+  .stage {
+    margin-top: 16px; border-radius: 16px; aspect-ratio: 1/1; display: grid; place-items: center;
+    position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.07);
+    background: linear-gradient(150deg, #2b2f38, #16181f);
+    transition: background .4s;
+  }
+  .stage::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.02) 0 2px, transparent 2px 6px); }
+  .stage.m-wood    { background: radial-gradient(120% 120% at 30% 15%, #8a5c35, #3a2615); }
+  .stage.m-slate   { background: radial-gradient(120% 120% at 30% 15%, #444a53, #171a20); }
+  .stage.m-acrylic { background: radial-gradient(120% 120% at 30% 15%, #24434f, #0b1418); }
+  .stage.m-metal   { background: radial-gradient(120% 120% at 30% 15%, #656b74, #23262c); }
+  .stage.m-tumbler { background: linear-gradient(150deg, #d8dbe0, #9aa0ab 60%, #6d7480); }
+  .engrave {
+    z-index: 3; text-align: center; padding: 0 22px; max-width: 90%;
+  }
+  .engrave .etxt {
+    font-size: clamp(22px, 4vw, 34px); font-weight: 800; letter-spacing: .02em;
+    color: #ece4d6; word-break: break-word;
+    text-shadow: 0 1px 1px rgba(0,0,0,.55), 0 0 12px rgba(255,154,77,.25);
+  }
+  .stage.m-tumbler .engrave .etxt { color: #2a2d33; text-shadow: 0 1px 0 rgba(255,255,255,.4); }
+  .engrave .esub { display:block; margin-top: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+  .stage.m-tumbler .engrave .esub { color: rgba(0,0,0,.5); }
+  /* scan animation on submit */
+  .stage .laser { position: absolute; left:0; right:0; height: 2px; top: -4px; opacity: 0;
+    background: linear-gradient(90deg, transparent, var(--shield), transparent);
+    box-shadow: 0 0 16px 3px rgba(255,106,26,.8); z-index: 4; }
+  .stage.scanning .laser { animation: scan2 1.1s ease-in-out 1 both; }
+  @keyframes scan2 { 0%{top:-4px;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{top:100%;opacity:0} }
+  .pv-meta { display:flex; justify-content: space-between; margin-top: 18px; font-family: var(--mono); font-size: 12px; color: var(--text-dim); }
+  .pv-meta b { color: var(--text); }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0; overflow: hidden; background: var(--ink-800); }
+  .marquee-track { display: flex; gap: 44px; padding: 18px 0; white-space: nowrap; animation: slide 26s linear infinite; }
+  .marquee-track span { font-family: var(--mono); font-size: 14px; color: var(--text-dim); letter-spacing: .05em; }
+  .marquee-track span i { color: var(--shield); font-style: normal; margin-right: 10px; }
+  @keyframes slide { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* ---------- ABOUT + FAQ ---------- */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .about-card {
+    border-radius: 18px; aspect-ratio: 4/3;
+    background:
+      radial-gradient(100% 100% at 20% 10%, rgba(255,106,26,.12), transparent 55%),
+      linear-gradient(160deg, var(--surface-2), var(--ink-800));
+    border: 1px solid var(--line-bright); display: grid; place-items: center;
+  }
+  .about-card .big { font-size: 64px; font-weight: 800; letter-spacing: .16em; background: linear-gradient(120deg, var(--shield), var(--magenta)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .faq { display: grid; gap: 12px; margin-top: 26px; }
+  .faq details {
+    border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; background: var(--surface);
+  }
+  .faq summary { cursor: pointer; font-weight: 600; list-style: none; display:flex; justify-content: space-between; align-items:center; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content: "+"; color: var(--shield); font-family: var(--mono); font-size: 20px; }
+  .faq details[open] summary::after { content: "\2212"; }
+  .faq p { color: var(--text-dim); margin: 12px 0 2px; font-size: 14px; }
+
+  /* ---------- FOOTER ---------- */
+  footer { border-top: 1px solid var(--line); padding: 46px 0 60px; }
+  .foot { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 26px; }
+  .foot .brand { margin-bottom: 12px; }
+  .foot p { color: var(--text-faint); font-size: 13px; max-width: 34ch; margin: 0; }
+  .foot-links { display: flex; gap: 60px; flex-wrap: wrap; }
+  .foot-col h4 { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 12px; }
+  .foot-col a { display: block; color: var(--text-faint); font-size: 14px; padding: 4px 0; }
+  .foot-col a:hover { color: var(--shield); }
+  .copyright { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--text-faint); display:flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+  .mock-banner {
+    background: linear-gradient(90deg, rgba(255,154,77,.16), rgba(255,59,48,.12));
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--text-dim);
+    text-align: center; padding: 8px 16px;
+  }
+  .mock-banner b { color: var(--ember); }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .hero-grid, .order-grid, .about-grid { grid-template-columns: 1fr; }
+    .grid.cols4 { grid-template-columns: repeat(2,1fr); }
+    .grid.cols3 { grid-template-columns: repeat(2,1fr); }
+    .mats { grid-template-columns: repeat(2,1fr); }
+    nav.links { display: none; }
+    .preview-card { position: static; }
+    .hero-card { max-width: 380px; }
+  }
+  @media (max-width: 560px) {
+    section { padding: 60px 0; }
+    .grid.cols4, .grid.cols3, .mats { grid-template-columns: 1fr; }
+    .row2 { grid-template-columns: 1fr; }
+    .hero-stats { gap: 20px; }
+    .foot-links { gap: 32px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="mock-banner">CONCEPT MOCKUP — <b>SCORCHMARK</b> · direction: Sleek Maker (dark + flame) · orders via quote request</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="flameGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#e21f12"/>
+      <stop offset=".5" stop-color="#ff6a1a"/>
+      <stop offset="1" stop-color="#ffc531"/>
+    </linearGradient>
+    <linearGradient id="coreGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ff9a1a"/>
+      <stop offset="1" stop-color="#fff0b8"/>
+    </linearGradient>
+    <symbol id="flameSym" viewBox="0 0 100 120">
+      <path d="M50 4 C 55 30, 74 40, 74 72 C 74 98, 63 116, 50 116 C 37 116, 26 98, 26 72 C 26 54, 38 50, 42 38 C 45 50, 47 42, 50 4 Z" fill="url(#flameGrad)"/>
+      <path d="M50 46 C 53 62, 62 68, 62 86 C 62 102, 56 110, 50 110 C 44 110, 38 102, 38 86 C 38 76, 44 72, 46 64 C 47 72, 49 66, 50 46 Z" fill="url(#coreGrad)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand"><svg class="brand-mark" viewBox="0 0 100 120" aria-hidden="true"><use href="#flameSym"/></svg><b>SCORCH<span>MARK</span></b></a>
+    <nav class="links">
+      <a href="#catalog">Catalog</a>
+      <a href="#possible">What's Possible</a>
+      <a href="#order">Custom Order</a>
+      <a href="#about">About</a>
+    </nav>
+    <a href="#order" class="btn btn-primary">Start a Custom Order</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Custom laser engraving &amp; cutting</span>
+        <h1><span class="scanwrap">From blank</span><br><span class="lit">to bold.</span></h1>
+        <p class="lead">Coasters, tumblers, cutting boards, business cards, signs — engraved sharp and made to order. Send us your idea, we'll send back a quote.</p>
+        <div class="hero-cta">
+          <a href="#order" class="btn btn-primary">Start a Custom Order</a>
+          <a href="#possible" class="btn btn-ghost">See what's possible</a>
+        </div>
+        <div class="hero-stats">
+          <div><span class="stat-n">48hr</span><span class="stat-l">Avg. quote</span></div>
+          <div><span class="stat-n">6+</span><span class="stat-l">Materials</span></div>
+          <div><span class="stat-n">1&ndash;500</span><span class="stat-l">Order size</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-head">
+          <span class="tag">// sample_engrave</span>
+          <span class="hc-dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="puck">
+          <div class="etch">
+            <div class="mark">The Hendersons</div>
+            <small>Est. 2019 · Slate</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="catalog">
+    <div class="wrap">
+      <span class="eyebrow">The catalog</span>
+      <h2 class="section-title">What do you want made?</h2>
+      <p class="section-sub">Browse by the occasion you're shopping for, or jump straight to a product.</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="occasion">Shop by Occasion</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="product">Shop by Product</button>
+      </div>
+
+      <div class="panel active" data-panel="occasion">
+        <div class="grid cols3">
+          <div class="tile t-wed"><span class="ico">💍</span><span class="arrow">↗</span><h3>Weddings</h3><p>Signage, favors, guest books, cake toppers</p></div>
+          <div class="tile t-hol"><span class="ico">🎄</span><span class="arrow">↗</span><h3>Holidays</h3><p>Ornaments, gift tags, stocking tags</p></div>
+          <div class="tile t-pet"><span class="ico">🐾</span><span class="arrow">↗</span><h3>Pets</h3><p>ID tags, portraits, memorial keepsakes</p></div>
+          <div class="tile t-corp"><span class="ico">🏢</span><span class="arrow">↗</span><h3>Corporate &amp; Bulk</h3><p>Logo swag, name badges, awards</p></div>
+          <div class="tile t-house"><span class="ico">🏡</span><span class="arrow">↗</span><h3>Housewarming</h3><p>Address signs, cutting boards, coasters</p></div>
+          <div class="tile t-just"><span class="ico">🎁</span><span class="arrow">↗</span><h3>Just Because</h3><p>Personalized gifts for anyone</p></div>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="product">
+        <div class="grid cols4">
+          <div class="tile"><span class="ico">🥃</span><span class="arrow">↗</span><h3>Coasters</h3><p>Slate, wood, acrylic, cork</p></div>
+          <div class="tile"><span class="ico">🍺</span><span class="arrow">↗</span><h3>Tumblers &amp; Drinkware</h3><p>Stainless, pint &amp; wine glasses</p></div>
+          <div class="tile"><span class="ico">💼</span><span class="arrow">↗</span><h3>Business Cards</h3><p>Wood, metal, acrylic</p></div>
+          <div class="tile"><span class="ico">🔪</span><span class="arrow">↗</span><h3>Cutting Boards</h3><p>Charcuterie &amp; kitchen</p></div>
+          <div class="tile"><span class="ico">🪧</span><span class="arrow">↗</span><h3>Signs</h3><p>Welcome, address, bar &amp; home</p></div>
+          <div class="tile"><span class="ico">🔑</span><span class="arrow">↗</span><h3>Keychains &amp; Tags</h3><p>Leather, wood, metal</p></div>
+          <div class="tile"><span class="ico">✨</span><span class="arrow">↗</span><h3>Ornaments</h3><p>Seasonal &amp; keepsake</p></div>
+          <div class="tile"><span class="ico">🏆</span><span class="arrow">↗</span><h3>Awards &amp; Plaques</h3><p>Recognition &amp; trophies</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S POSSIBLE -->
+  <section id="possible">
+    <div class="wrap">
+      <span class="eyebrow">The idea bank</span>
+      <h2 class="section-title">What's possible</h2>
+      <p class="section-sub">Every material burns a little differently. Here's the range — new experiments land here as we run them.</p>
+      <div class="mats" style="margin-top:34px">
+        <div class="mat"><div class="swatch sw-wood"></div><div class="label"><b>Wood</b><span>Warm grain · deep contrast</span></div></div>
+        <div class="mat"><div class="swatch sw-slate"></div><div class="label"><b>Slate</b><span>Frosted-white etch · premium</span></div></div>
+        <div class="mat"><div class="swatch sw-acrylic"></div><div class="label"><b>Acrylic</b><span>Glossy · precise edges</span></div></div>
+        <div class="mat"><div class="swatch sw-metal"></div><div class="label"><b>Anodized Metal</b><span>Crisp light-on-dark marks</span></div></div>
+        <div class="mat"><div class="swatch sw-leather"></div><div class="label"><b>Leather</b><span>Rich burn · patches &amp; goods</span></div></div>
+        <div class="mat"><div class="swatch sw-glass"></div><div class="label"><b>Glass</b><span>Frosted drinkware finish</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-track" id="marquee">
+      <span><i>◆</i>Made this week: 40 wedding coasters</span>
+      <span><i>◆</i>Anniversary cutting board</span>
+      <span><i>◆</i>Brewery pint glasses ×24</span>
+      <span><i>◆</i>Realtor closing gifts</span>
+      <span><i>◆</i>Dog memorial slate</span>
+      <span><i>◆</i>Corporate award plaques</span>
+    </div>
+  </div>
+
+  <!-- CUSTOM ORDER -->
+  <section id="order" class="order">
+    <div class="wrap">
+      <span class="eyebrow">Start a custom order</span>
+      <h2 class="section-title">Tell us the idea. We'll send a quote.</h2>
+      <p class="section-sub">No checkout, no surprises. Fill this out and you'll hear back within about 48 hours with pricing and a proof.</p>
+
+      <div class="order-grid" style="margin-top:36px">
+        <!-- FORM -->
+        <form class="form-card" id="quoteForm" novalidate>
+          <div class="row2">
+            <div class="field">
+              <label for="item">Item</label>
+              <select id="item">
+                <option>Coasters</option>
+                <option>Tumbler / Drinkware</option>
+                <option>Business Cards</option>
+                <option>Cutting Board</option>
+                <option>Sign</option>
+                <option>Keychain / Tag</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="material">Material</label>
+              <select id="material">
+                <option value="slate">Slate</option>
+                <option value="wood">Wood</option>
+                <option value="acrylic">Acrylic</option>
+                <option value="metal">Anodized Metal</option>
+                <option value="tumbler">Stainless (tumbler)</option>
+              </select>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="qty">Quantity</label>
+              <input id="qty" type="number" min="1" value="4">
+            </div>
+            <div class="field">
+              <label for="date">Need it by</label>
+              <input id="date" type="text" placeholder="e.g. Aug 15">
+            </div>
+          </div>
+          <div class="field">
+            <label for="text">Personalization text</label>
+            <input id="text" type="text" maxlength="24" value="The Hendersons" placeholder="Name, date, quote...">
+          </div>
+          <div class="field">
+            <label for="sub">Sub-line (optional)</label>
+            <input id="sub" type="text" maxlength="24" value="Est. 2019" placeholder="Date, tagline...">
+          </div>
+          <div class="field">
+            <label>Artwork / logo</label>
+            <div class="upload" id="upload">⬆ Drop a logo or photo &mdash; or click to browse</div>
+          </div>
+          <div class="field">
+            <label for="notes">Notes</label>
+            <textarea id="notes" placeholder="Colors, style, anything you're picturing..."></textarea>
+          </div>
+          <div class="field">
+            <label for="email">Your email</label>
+            <input id="email" type="email" placeholder="you@email.com">
+          </div>
+          <button type="submit" class="btn btn-primary">Request my quote</button>
+          <p class="note" id="formNote">// no payment now — you approve pricing before we cut</p>
+        </form>
+
+        <!-- LIVE PREVIEW -->
+        <div class="preview-card">
+          <span class="plabel">Live preview</span>
+          <div class="stage m-slate" id="stage">
+            <div class="laser"></div>
+            <div class="engrave">
+              <span class="etxt" id="pvText">The Hendersons</span>
+              <span class="esub" id="pvSub">Est. 2019</span>
+            </div>
+          </div>
+          <div class="pv-meta">
+            <span>Material: <b id="pvMat">Slate</b></span>
+            <span>Qty: <b id="pvQty">4</b></span>
+          </div>
+          <p class="note" style="text-align:left;margin-top:14px">This is a rough visual, not the final proof. Your real proof comes with the quote.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT + FAQ -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <div>
+        <span class="eyebrow">Who's behind it</span>
+        <h2 class="section-title">One machine, a lot of ideas.</h2>
+        <p class="section-sub">Scorchmark is a one-person shop running a precision laser out of the garage — turning wood, slate, metal and glass into things people actually keep. Every order is cut, checked, and shipped by hand.</p>
+        <div class="faq">
+          <details open><summary>How fast is turnaround?</summary><p>Quotes within ~48 hours. Most orders ship 5&ndash;10 days after you approve the proof, depending on size.</p></details>
+          <details><summary>Do you ship or is it local pickup?</summary><p>Both — free local pickup, or flat-rate shipping anywhere in the US.</p></details>
+          <details><summary>What files do you need for a logo?</summary><p>A PNG or SVG works great. No file? Send whatever you've got and we'll clean it up.</p></details>
+          <details><summary>What's the minimum order?</summary><p>One. Whether it's a single gift or 500 corporate pieces, same care.</p></details>
+        </div>
+      </div>
+      <div class="about-card"><svg class="about-flame" viewBox="0 0 100 120" aria-hidden="true"><use href="#flameSym"/></svg></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="brand"><svg class="brand-mark" viewBox="0 0 100 120" aria-hidden="true"><use href="#flameSym"/></svg><b>SCORCH<span>MARK</span></b></div>
+        <p>Custom laser engraving &amp; cutting. From blank to bold.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Shop</h4>
+          <a href="#catalog">Coasters</a>
+          <a href="#catalog">Drinkware</a>
+          <a href="#catalog">Signs</a>
+          <a href="#catalog">Business Cards</a>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="#about">About</a>
+          <a href="#possible">What's Possible</a>
+          <a href="#order">Custom Order</a>
+          <a href="#about">FAQ</a>
+        </div>
+        <div class="foot-col">
+          <h4>Get in touch</h4>
+          <a href="#order">Start an order</a>
+          <a href="#top">hello@scorchmark.co</a>
+          <a href="#top">@scorchmark</a>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
+      <span>© 2026 Scorchmark — concept mockup</span>
+      <span>Made with a laser and too much coffee</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---- Tabs ----
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(b){ b.setAttribute('aria-selected','false'); });
+      btn.setAttribute('aria-selected','true');
+      var target = btn.dataset.tab;
+      document.querySelectorAll('.panel').forEach(function(p){
+        p.classList.toggle('active', p.dataset.panel === target);
+      });
+    });
+  });
+
+  // ---- Live preview ----
+  var textEl = document.getElementById('text');
+  var subEl  = document.getElementById('sub');
+  var matEl  = document.getElementById('material');
+  var qtyEl  = document.getElementById('qty');
+  var stage  = document.getElementById('stage');
+  var pvText = document.getElementById('pvText');
+  var pvSub  = document.getElementById('pvSub');
+  var pvMat  = document.getElementById('pvMat');
+  var pvQty  = document.getElementById('pvQty');
+
+  var matLabels = { slate:'Slate', wood:'Wood', acrylic:'Acrylic', metal:'Anodized Metal', tumbler:'Stainless' };
+
+  function sync(){
+    pvText.textContent = textEl.value || 'Your text here';
+    pvSub.textContent  = subEl.value;
+    pvSub.style.display = subEl.value ? 'block' : 'none';
+    stage.className = 'stage m-' + matEl.value;
+    pvMat.textContent = matLabels[matEl.value] || '—';
+    pvQty.textContent = qtyEl.value || '1';
+  }
+  [textEl, subEl, qtyEl].forEach(function(el){ el.addEventListener('input', sync); });
+  matEl.addEventListener('change', sync);
+  sync();
+
+  // ---- Upload (mock) ----
+  document.getElementById('upload').addEventListener('click', function(){
+    this.textContent = '✓ logo-mark.png attached';
+    this.style.color = 'var(--shield)';
+    this.style.borderColor = 'var(--shield)';
+  });
+
+  // ---- Submit → scan animation + success ----
+  document.getElementById('quoteForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    stage.classList.remove('scanning');
+    void stage.offsetWidth; // reflow to restart animation
+    stage.classList.add('scanning');
+    var note = document.getElementById('formNote');
+    note.textContent = '✓ Sent! We’ll email your quote within ~48 hours.';
+    note.style.color = 'var(--shield)';
+  });
+
+  // ---- Smooth scroll ----
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href');
+      if (id.length > 1) {
+        var el = document.querySelector(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
