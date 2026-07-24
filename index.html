@@ -143,7 +143,15 @@
   .btn-ghost:hover { border-color: var(--shield); color: var(--shield); }
   .nav .btn { padding: 9px 15px; }
 
-  .nav-toggle { display: none; }
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 42px; height: 38px; padding: 0 9px; cursor: pointer;
+    background: transparent; border: 1px solid var(--line-bright); border-radius: 9px;
+  }
+  .nav-toggle span { display: block; height: 2px; width: 100%; background: var(--text); border-radius: 2px; transition: transform .22s, opacity .22s; }
+  .nav.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav.open .nav-toggle span:nth-child(2) { opacity: 0; }
+  .nav.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
   /* ---------- HERO ---------- */
   .hero { padding: 92px 0 72px; position: relative; }
@@ -406,7 +414,16 @@
     .grid.cols4 { grid-template-columns: repeat(2,1fr); }
     .grid.cols3 { grid-template-columns: repeat(2,1fr); }
     .mats { grid-template-columns: repeat(2,1fr); }
-    nav.links { display: none; }
+    nav.links {
+      position: absolute; top: 64px; left: 0; right: 0;
+      display: none; flex-direction: column; gap: 0;
+      background: rgba(13,11,9,.98); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line); padding: 6px 24px 14px;
+    }
+    .nav.open nav.links { display: flex; }
+    nav.links a { padding: 13px 2px; font-size: 15px; border-top: 1px solid var(--line); }
+    .nav-toggle { display: flex; }
+    .nav-inner > .btn-primary { display: none; }
     .preview-card { position: static; }
     .hero-card { max-width: 380px; }
   }
@@ -422,8 +439,6 @@
     * { animation: none !important; transition: none !important; }
   }
 </style>
-
-<div class="mock-banner">CONCEPT MOCKUP — <b>SCORCHMARK</b> · direction: Sleek Maker (dark + flame) · orders via quote request</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -453,6 +468,7 @@
       <a href="#about">About</a>
     </nav>
     <a href="#order" class="btn btn-primary">Start a Custom Order</a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -767,6 +783,23 @@
       }
     });
   });
+
+  // ---- Mobile nav toggle ----
+  (function(){
+    var navEl = document.querySelector('header.nav');
+    var toggle = navEl.querySelector('.nav-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function(){
+      var open = navEl.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    navEl.querySelectorAll('nav.links a').forEach(function(a){
+      a.addEventListener('click', function(){
+        navEl.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
 </script>
 
 </body>
