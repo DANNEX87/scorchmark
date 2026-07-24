@@ -46,6 +46,7 @@
 
   body {
     margin: 0;
+    color-scheme: dark;
     background:
       radial-gradient(58vw 52vw at 6% -10%, rgba(255,150,40,.18), transparent 60%),
       radial-gradient(48vw 48vw at 100% 2%, rgba(255,59,48,.13), transparent 60%),
@@ -313,6 +314,7 @@
     outline: none; border-color: var(--shield); box-shadow: 0 0 0 3px rgba(255,106,26,.14);
   }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .row2.solo { grid-template-columns: 1fr; }
   .upload {
     border: 1px dashed var(--line-bright); border-radius: 10px; padding: 18px;
     text-align: center; color: var(--text-faint); font-family: var(--mono); font-size: 13px;
@@ -615,14 +617,14 @@
             <label for="detail" id="detailLabel">Details</label>
             <select id="detail"></select>
           </div>
-          <div class="row2">
-            <div class="field">
+          <div class="row2" id="qtyRow">
+            <div class="field" id="qtyField">
               <label for="qty">Quantity</label>
               <input id="qty" type="number" min="1" value="1">
             </div>
             <div class="field">
               <label for="date">Need it by</label>
-              <input id="date" type="text" placeholder="e.g. Aug 15">
+              <input id="date" type="date">
             </div>
           </div>
           <div class="field">
@@ -756,7 +758,8 @@
     },
     'Business cards': {
       materials: [['wood','Wood veneer'],['acrylic','Acrylic'],['metal','Anodized metal'],['wood','Leather']],
-      detail: { label: 'How many', options: ['25','50','100','250'] }
+      detail: { label: 'How many', options: ['25','50','100','250'] },
+      qtyFromDetail: true
     },
     'Sign': {
       materials: [['wood','Wood'],['acrylic','Acrylic'],['metal','Metal'],['slate','Slate']],
@@ -820,6 +823,11 @@
       detailField.style.display = 'none';
       detailEl.innerHTML = '';
     }
+    // Business cards: the tier ("How many") IS the quantity, so hide the
+    // generic Quantity field and let "Need it by" fill the row.
+    var qtyFromDetail = !!p.qtyFromDetail;
+    document.getElementById('qtyField').style.display = qtyFromDetail ? 'none' : '';
+    document.getElementById('qtyRow').classList.toggle('solo', qtyFromDetail);
   }
 
   function sync(){
@@ -828,12 +836,16 @@
     pvSub.style.display = subEl.value ? 'block' : 'none';
     stage.className = 'stage m-' + (matEl.value || 'slate');
     pvMat.textContent = matEl.options.length ? matEl.options[matEl.selectedIndex].text : '—';
-    pvQty.textContent = qtyEl.value || '1';
+    var qtyHidden = document.getElementById('qtyField').style.display === 'none';
+    pvQty.textContent = (qtyHidden ? detailEl.value : qtyEl.value) || '1';
   }
 
   itemEl.addEventListener('change', function(){ applyProduct(); sync(); });
   [textEl, subEl, qtyEl].forEach(function(el){ el.addEventListener('input', sync); });
   matEl.addEventListener('change', sync);
+  detailEl.addEventListener('change', sync);
+  // "Need it by" can't be in the past
+  try { document.getElementById('date').min = new Date().toISOString().slice(0, 10); } catch (e) {}
   applyProduct();
   sync();
 
@@ -857,6 +869,12 @@
   var submitBtn = form.querySelector('button[type="submit"]');
   var emailEl = document.getElementById('email');
 
+  function prettyDate(v){
+    if (!v) return '';
+    var d = new Date(v + 'T00:00');
+    return isNaN(d.getTime()) ? v : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var email = emailEl.value.trim();
@@ -866,13 +884,15 @@
       emailEl.focus();
       return;
     }
+    var qtyHidden = document.getElementById('qtyField').style.display === 'none';
+    var detailShown = detailField.style.display !== 'none';
     var payload = {
       item: document.getElementById('item').value,
       material: matEl.options[matEl.selectedIndex].text,
-      detail: (detailField.style.display !== 'none') ? detailEl.value : '',
-      detailLabel: (detailField.style.display !== 'none') ? detailLabel.textContent : '',
-      qty: qtyEl.value,
-      date: document.getElementById('date').value,
+      detail: (detailShown && !qtyHidden) ? detailEl.value : '',
+      detailLabel: (detailShown && !qtyHidden) ? detailLabel.textContent : '',
+      qty: qtyHidden ? detailEl.value : qtyEl.value,
+      date: prettyDate(document.getElementById('date').value),
       text: textEl.value,
       sub: subEl.value,
       notes: document.getElementById('notes').value,
