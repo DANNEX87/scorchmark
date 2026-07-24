@@ -342,6 +342,7 @@
   .stage.m-acrylic { background: radial-gradient(120% 120% at 30% 15%, #24434f, #0b1418); }
   .stage.m-metal   { background: radial-gradient(120% 120% at 30% 15%, #656b74, #23262c); }
   .stage.m-tumbler { background: linear-gradient(150deg, #d8dbe0, #9aa0ab 60%, #6d7480); }
+  .stage.m-glass   { background: radial-gradient(120% 120% at 30% 15%, #3a4a52, #10181c); }
   .engrave {
     z-index: 3; text-align: center; padding: 0 22px; max-width: 90%;
   }
@@ -589,10 +590,13 @@
               <select id="item">
                 <option>Coasters</option>
                 <option>Tumbler / Drinkware</option>
-                <option>Business Cards</option>
-                <option>Cutting Board</option>
+                <option>Cutting / Charcuterie board</option>
+                <option>Business cards</option>
                 <option>Sign</option>
                 <option>Keychain / Tag</option>
+                <option>Ornament</option>
+                <option>Award / Plaque</option>
+                <option>Pet tag</option>
                 <option>Something else</option>
               </select>
             </div>
@@ -607,10 +611,14 @@
               </select>
             </div>
           </div>
+          <div class="field" id="detailField" style="display:none">
+            <label for="detail" id="detailLabel">Details</label>
+            <select id="detail"></select>
+          </div>
           <div class="row2">
             <div class="field">
               <label for="qty">Quantity</label>
-              <input id="qty" type="number" min="1" value="4">
+              <input id="qty" type="number" min="1" value="1">
             </div>
             <div class="field">
               <label for="date">Need it by</label>
@@ -619,15 +627,15 @@
           </div>
           <div class="field">
             <label for="text">Personalization text</label>
-            <input id="text" type="text" maxlength="24" value="The Hendersons" placeholder="Name, date, quote...">
+            <input id="text" type="text" maxlength="24" placeholder="Name, date, quote...">
           </div>
           <div class="field">
             <label for="sub">Sub-line (optional)</label>
-            <input id="sub" type="text" maxlength="24" value="Est. 2019" placeholder="Date, tagline...">
+            <input id="sub" type="text" maxlength="24" placeholder="Date, tagline...">
           </div>
           <div class="field">
             <label>Artwork / logo</label>
-            <div class="upload" id="upload">⬆ Drop a logo or photo &mdash; or click to browse</div>
+            <div class="upload" id="upload" role="button" tabindex="0">⬆ Have a logo or photo? Tap to flag it &mdash; we'll request the file with your quote</div>
           </div>
           <div class="field">
             <label for="notes">Notes</label>
@@ -637,6 +645,7 @@
             <label for="email">Your email</label>
             <input id="email" type="email" placeholder="you@email.com">
           </div>
+          <input type="text" name="company" id="hp_company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
           <button type="submit" class="btn btn-primary">Request my quote</button>
           <p class="note" id="formNote">// no payment now — you approve pricing before we cut</p>
         </form>
@@ -730,7 +739,53 @@
     });
   });
 
+  // ---- Product catalog: which materials + extra question each item offers ----
+  // material pairs are [previewSwatch, label]; preview swatch ∈ slate|wood|acrylic|metal|tumbler|glass
+  var PRODUCTS = {
+    'Coasters': {
+      materials: [['slate','Slate'],['wood','Hardwood'],['acrylic','Acrylic'],['wood','Cork']],
+      detail: { label: 'Set size', options: ['Set of 4','Set of 6','Single','Other (note below)'] }
+    },
+    'Tumbler / Drinkware': {
+      materials: [['tumbler','Powder-coated stainless'],['glass','Glass'],['slate','Ceramic']],
+      detail: { label: 'Drinkware type', options: ['20oz tumbler','30oz tumbler','Pint glass','Wine glass','Whiskey glass','Mug'] }
+    },
+    'Cutting / Charcuterie board': {
+      materials: [['wood','Bamboo'],['wood','Maple'],['wood','Walnut'],['acrylic','Acrylic']],
+      detail: { label: 'Board size', options: ['Small (~9×12")','Medium','Large charcuterie'] }
+    },
+    'Business cards': {
+      materials: [['wood','Wood veneer'],['acrylic','Acrylic'],['metal','Anodized metal'],['wood','Leather']],
+      detail: { label: 'How many', options: ['25','50','100','250'] }
+    },
+    'Sign': {
+      materials: [['wood','Wood'],['acrylic','Acrylic'],['metal','Metal'],['slate','Slate']],
+      detail: { label: 'Size', options: ['Small (<12")','Medium (12–24")','Large (>24")'] }
+    },
+    'Keychain / Tag': {
+      materials: [['wood','Leather'],['wood','Wood'],['acrylic','Acrylic'],['metal','Anodized metal']],
+      detail: null
+    },
+    'Ornament': {
+      materials: [['wood','Wood'],['acrylic','Acrylic'],['slate','Slate']],
+      detail: { label: 'Shape', options: ['Round','Snowflake','Custom shape'] }
+    },
+    'Award / Plaque': {
+      materials: [['wood','Wood'],['acrylic','Acrylic'],['glass','Glass'],['slate','Marble']],
+      detail: { label: 'Size', options: ['Small','Medium','Large'] }
+    },
+    'Pet tag': {
+      materials: [['metal','Anodized aluminum'],['metal','Brass'],['metal','Stainless'],['acrylic','Acrylic']],
+      detail: { label: 'Shape', options: ['Bone','Round','Heart','Classic tag'] }
+    },
+    'Something else': {
+      materials: [['wood',"Not sure — let's discuss"],['wood','Wood'],['acrylic','Acrylic'],['metal','Metal'],['glass','Glass'],['slate','Slate']],
+      detail: null
+    }
+  };
+
   // ---- Live preview ----
+  var itemEl = document.getElementById('item');
   var textEl = document.getElementById('text');
   var subEl  = document.getElementById('sub');
   var matEl  = document.getElementById('material');
@@ -740,37 +795,125 @@
   var pvSub  = document.getElementById('pvSub');
   var pvMat  = document.getElementById('pvMat');
   var pvQty  = document.getElementById('pvQty');
+  var detailField = document.getElementById('detailField');
+  var detailLabel = document.getElementById('detailLabel');
+  var detailEl    = document.getElementById('detail');
 
-  var matLabels = { slate:'Slate', wood:'Wood', acrylic:'Acrylic', metal:'Anodized Metal', tumbler:'Stainless' };
+  function applyProduct(){
+    var p = PRODUCTS[itemEl.value] || PRODUCTS['Something else'];
+    matEl.innerHTML = '';
+    p.materials.forEach(function(m){
+      var o = document.createElement('option');
+      o.value = m[0]; o.textContent = m[1];
+      matEl.appendChild(o);
+    });
+    if (p.detail) {
+      detailLabel.textContent = p.detail.label;
+      detailEl.innerHTML = '';
+      p.detail.options.forEach(function(v){
+        var o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        detailEl.appendChild(o);
+      });
+      detailField.style.display = '';
+    } else {
+      detailField.style.display = 'none';
+      detailEl.innerHTML = '';
+    }
+  }
 
   function sync(){
     pvText.textContent = textEl.value || 'Your text here';
     pvSub.textContent  = subEl.value;
     pvSub.style.display = subEl.value ? 'block' : 'none';
-    stage.className = 'stage m-' + matEl.value;
-    pvMat.textContent = matLabels[matEl.value] || '—';
+    stage.className = 'stage m-' + (matEl.value || 'slate');
+    pvMat.textContent = matEl.options.length ? matEl.options[matEl.selectedIndex].text : '—';
     pvQty.textContent = qtyEl.value || '1';
   }
+
+  itemEl.addEventListener('change', function(){ applyProduct(); sync(); });
   [textEl, subEl, qtyEl].forEach(function(el){ el.addEventListener('input', sync); });
   matEl.addEventListener('change', sync);
+  applyProduct();
   sync();
 
-  // ---- Upload (mock) ----
-  document.getElementById('upload').addEventListener('click', function(){
-    this.textContent = '✓ logo-mark.png attached';
-    this.style.color = 'var(--shield)';
-    this.style.borderColor = 'var(--shield)';
-  });
+  // ---- Artwork flag (the actual file is collected after the quote, not here) ----
+  var hasArtwork = false;
+  var uploadEl = document.getElementById('upload');
+  function toggleArtwork(){
+    hasArtwork = !hasArtwork;
+    uploadEl.textContent = hasArtwork
+      ? '✓ Great — we’ll ask for your file with the quote'
+      : '⬆ Have a logo or photo? Tap to flag it — we’ll request the file with your quote';
+    uploadEl.style.color = hasArtwork ? 'var(--shield)' : '';
+    uploadEl.style.borderColor = hasArtwork ? 'var(--shield)' : '';
+  }
+  uploadEl.addEventListener('click', toggleArtwork);
+  uploadEl.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleArtwork(); } });
 
-  // ---- Submit → scan animation + success ----
-  document.getElementById('quoteForm').addEventListener('submit', function(e){
+  // ---- Submit → send to /api/quote (Cloudflare Function → Resend) ----
+  var form = document.getElementById('quoteForm');
+  var note = document.getElementById('formNote');
+  var submitBtn = form.querySelector('button[type="submit"]');
+  var emailEl = document.getElementById('email');
+
+  form.addEventListener('submit', function(e){
     e.preventDefault();
-    stage.classList.remove('scanning');
-    void stage.offsetWidth; // reflow to restart animation
-    stage.classList.add('scanning');
-    var note = document.getElementById('formNote');
-    note.textContent = '✓ Sent! We’ll email your quote within ~48 hours.';
-    note.style.color = 'var(--shield)';
+    var email = emailEl.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      note.textContent = '// please enter a valid email so we can send your quote';
+      note.style.color = 'var(--magenta)';
+      emailEl.focus();
+      return;
+    }
+    var payload = {
+      item: document.getElementById('item').value,
+      material: matEl.options[matEl.selectedIndex].text,
+      detail: (detailField.style.display !== 'none') ? detailEl.value : '',
+      detailLabel: (detailField.style.display !== 'none') ? detailLabel.textContent : '',
+      qty: qtyEl.value,
+      date: document.getElementById('date').value,
+      text: textEl.value,
+      sub: subEl.value,
+      notes: document.getElementById('notes').value,
+      artwork: hasArtwork ? 'yes' : 'no',
+      company: document.getElementById('hp_company').value,
+      email: email
+    };
+    var original = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    note.textContent = '// sending your request…';
+    note.style.color = 'var(--text-faint)';
+
+    fetch('/api/quote', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(r){ return r.json().catch(function(){ return { ok: r.ok }; }); })
+      .then(function(res){
+        if (res && res.ok) {
+          stage.classList.remove('scanning');
+          void stage.offsetWidth;
+          stage.classList.add('scanning');
+          form.querySelectorAll('input, select, textarea').forEach(function(el){ el.disabled = true; });
+          submitBtn.textContent = '✓ Request sent';
+          note.textContent = '✓ Sent! We’ll email your quote within ~48 hours.';
+          note.style.color = 'var(--shield)';
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.textContent = original;
+          note.textContent = '// ' + ((res && res.error) || 'Something went wrong. Please try again.');
+          note.style.color = 'var(--magenta)';
+        }
+      })
+      .catch(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = original;
+        note.textContent = '// couldn’t reach the server — check your connection and try again';
+        note.style.color = 'var(--magenta)';
+      });
   });
 
   // ---- Smooth scroll ----
