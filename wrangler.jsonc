@@ -1,0 +1,12 @@
+{
+  // Worker that serves the static site and handles POST /api/quote.
+  // Name MUST match the existing Worker so the deploy updates it in place
+  // (and keeps the scorchmark.co custom domain attached).
+  "name": "scorchmark",
+  "main": "worker.js",
+  "compatibility_date": "2024-11-01",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS"
+  }
+}

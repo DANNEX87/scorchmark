@@ -1,10 +1,7 @@
-// Cloudflare Pages Function — POST /api/quote
-// Sends a quote-request email via Resend. Secrets come from environment
-// variables set in the Cloudflare dashboard (never committed to the repo):
-//   RESEND_API_KEY  (required)  — your Resend API key
-//   TO_EMAIL        (required)  — where quote requests are delivered
-//   FROM_EMAIL      (optional)  — verified sender, e.g. "Scorchmark <quotes@scorchmark.co>"
-//                                  defaults to Resend's onboarding sender for testing
+// Cloudflare Worker — serves the static site (via the ASSETS binding) and
+// answers POST /api/quote by sending the quote email through Resend.
+// Secrets/vars are set in the Cloudflare dashboard, never committed:
+//   RESEND_API_KEY (required), TO_EMAIL (required), FROM_EMAIL (optional)
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -17,9 +14,7 @@ const esc = (s = "") =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])
   );
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
+async function handleQuote(request, env) {
   let data = {};
   try {
     const ct = request.headers.get("content-type") || "";
@@ -58,7 +53,7 @@ export async function onRequestPost(context) {
     text: data.text || "—",
     sub: data.sub || "—",
     artwork: data.artwork === "yes" || data.artwork === true ? "Yes — will send the file" : "No",
-    notes: (data.notes || "").trim() || "—",
+    notes: String(data.notes || "").trim() || "—",
   };
 
   const subject = `New quote request — ${f.item}${f.material !== "—" ? " (" + f.material + ")" : ""}`;
@@ -122,7 +117,6 @@ Reply to: ${email}`;
         html,
       }),
     });
-
     if (!res.ok) {
       return json({ ok: false, error: "We couldn't send that right now. Please try again in a bit." }, 502);
     }
@@ -131,3 +125,17 @@ Reply to: ${email}`;
     return json({ ok: false, error: "Network hiccup on our end. Please try again." }, 502);
   }
 }
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.pathname === "/api/quote") {
+      if (request.method !== "POST") {
+        return new Response("Method Not Allowed", { status: 405, headers: { allow: "POST" } });
+      }
+      return handleQuote(request, env);
+    }
+    // Everything else: serve the static site.
+    return env.ASSETS.fetch(request);
+  },
+};
